@@ -6,11 +6,24 @@
 //Use the tricks we learnt about scripting, passing parameters to GroovyShell through binding, properties, 
 //closure delegates, the 'object.with(Closure)' method, etc.
 
-
 List<String> filterSitesByUserScript(String userScript, List<String> sites) {
-    //Filtering function. Needs to be implemented
+    def rememberedSites = []
+    def binding = new Binding()
+    binding['download'] = {
+        try {
+            it.toURL().text
+        } catch (err) {
+            ''
+        }
+    }
+    binding['unless'] = {cond, stmt -> if (!cond) stmt()}
+    binding['siteTalksAboutGroovy'] = {(it.find ~/(?i)groovy/) != null}
+    binding['remember'] = {rememberedSites.add it}
+    binding['rememberedSites'] = rememberedSites
+    binding['allSites'] = sites
 
-    return []
+    GroovyShell shell = new GroovyShell(binding)
+    shell.evaluate userScript
 }
 
 
