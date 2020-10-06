@@ -3,7 +3,7 @@ class Counter {
     
     //f: Integer -> Integer
     def Counter map(Closure<Integer> f) {
-        //TASK Implement map
+        new Counter(value : f(this.value))
     }
 }
 def increment = {it + 1}

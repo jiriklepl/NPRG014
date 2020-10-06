@@ -8,6 +8,6 @@ assert ['H', 'S'] == words.findAll {it.size() == 3}*.toUpperCase()*.substring(0,
 
 //TASK Print squares smaller than 400 of all odd numbers in between 1 and 30
 
-//assert [1, 9, 25, 49, 81, 121, 169, 225, 289, 361] == 
+assert [1, 9, 25, 49, 81, 121, 169, 225, 289, 361] == (1..30).findAll{it%2==1}.collect{it*it}.findAll{it<400}
 
 println 'ok'

@@ -1,7 +1,10 @@
 //TASK make the Story class a functor, so that it accepts String -> String functions
 class Story {
     String words
-    
+
+    def map(Closure f) {
+        new Story(words : f(words))
+    }
 }
 
 def story = new Story(words: "")

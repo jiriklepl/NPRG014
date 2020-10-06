@@ -12,5 +12,8 @@ a + b + 9
 '''
 
 println 'Result: ' + shell.evaluate(code)
-
 //TASK Read and print the 'note' bound by the script
+note = "This is not boring"
+println shell.note
+println binding.note
+println note

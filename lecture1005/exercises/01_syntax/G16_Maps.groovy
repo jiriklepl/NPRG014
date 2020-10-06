@@ -19,7 +19,7 @@ println "All countries: ${capitals.keySet()}"
 println "The capital of CZ: ${capitals['cz']}"
 
 //TASK Print in upper case the names of all capitals of countries, the name of which starts with 's'
-//assert ['BRATISLAVA', 'STOCKHOLM'] == capitals...
+assert ['BRATISLAVA', 'STOCKHOLM'] == capitals.findAll{it.key[0] == 's'}*.value*.toUpperCase()
 
 
 final cities = capitals.values()
