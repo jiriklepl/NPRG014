@@ -13,7 +13,8 @@ class Money {
 }
 
 class MoneyCategory {
-//TASK Define methods of the MoneyCategory class so that the code below passes
+    static Money getEur(Integer amount) { new Money(amount: amount, currency: "eur") }
+    static Money getUsd(Integer amount) { new Money(amount: amount, currency: "usd") }
 }
 
 use(MoneyCategory) {

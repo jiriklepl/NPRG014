@@ -1,5 +1,6 @@
 def o1 = order pizza to "Malostranske namesti"
-
+// meaning: order(pizza).to("Malostranske namesti")
+// the two things are equivalent in groovy
 
 println o1
 

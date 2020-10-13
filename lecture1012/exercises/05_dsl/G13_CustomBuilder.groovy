@@ -50,6 +50,9 @@ println(builder.html {
         div {
             h1 'hello'
         }
+        div {
+            h1 'hello'
+        }
         p(align: "Center", color: "Magenta") {
             text "This is my document"
         }

@@ -8,7 +8,7 @@ def id = {it}
 def functions = [duplicate, triple, increment, addTwo]
 
 //TASK reduce all the above functions into one that is their combination
-def combo = ...
+def combo = functions.inject {f, g -> f >> g}
 
 println combo(10)
 assert 63 == combo(10)
