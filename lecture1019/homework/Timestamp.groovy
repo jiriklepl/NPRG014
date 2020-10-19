@@ -2,6 +2,7 @@ import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
+import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.control.SourceUnit
@@ -29,29 +30,24 @@ public @interface CreatedAt {
 public class CreatedAtTransform implements ASTTransformation {
 
     public void visit(ASTNode[] astNodes, SourceUnit source) {
+        ClassNode annotatedClass = astNodes[1]
 
-        //...
-        // TASK Ensure the annotated class has a private long field holding the time of instantiation of the object.
-        // Also, generate a public final method returning the value stored in the field. The name of the method should be configurable through 
-        // the annotation 'name' parameter.
-        // Additionally, all methods of the class should be enhanced so that they reset the time stored in the field to the current time,
-        // whenever they are called.
-        // Fill in the missing AST generation code to make the script pass
-        // You can take inspiration from exercises
-        // Documentation and hints:
-        // http://docs.groovy-lang.org/docs/next/html/documentation/
-        // http://docs.groovy-lang.org/docs/groovy-latest/html/api/org/codehaus/groovy/ast/package-summary.html
-        // http://docs.groovy-lang.org/docs/groovy-latest/html/api/org/codehaus/groovy/ast/expr/package-summary.html
-        // http://docs.groovy-lang.org/docs/groovy-latest/html/api/org/codehaus/groovy/ast/stmt/package-summary.html
-        // http://docs.groovy-lang.org/docs/groovy-latest/html/api/org/codehaus/groovy/ast/tools/package-summary.html        
-        // http://docs.groovy-lang.org/docs/groovy-latest/html/api/org/codehaus/groovy/ast/tools/GeneralUtils.html
+        FieldNode field = annotatedClass.addField("__timestamp", Opcodes.ACC_PRIVATE, ClassHelper.Long_TYPE, new ConstantExpression(0L))
+        FieldExpression fieldVar = fieldX(annotatedClass, field.name)
         
-        // Use ClassHelper.long_TYPE to specify a long type.
-        // buildFromString() returns an array, which holds a BlockStatement for the passed-in code as its first element.
-        // ClassNode.addField() accepts an expression, which can be obtained from a BlockStatement as blockStatement.statements.expression
-        // ClassNode.addMethod() accepts a BlockStatement
-        
-        // TODO Implement this method
+        ASTNode resetTimestamp = macro(CompilePhase.SEMANTIC_ANALYSIS, true) {
+            this.__timestamp = new Date().getTime()
+        }
+
+        annotatedClass.addConstructor(Opcodes.ACC_PUBLIC, [] as Parameter[], [] as ClassNode[], resetTimestamp)
+
+        for (def method in annotatedClass.getMethods()) {
+            def stmt = method.getCode()
+            method.setCode(new BlockStatement([resetTimestamp, stmt], new VariableScope()))
+        }
+
+        ASTNode body = macro(CompilePhase.SEMANTIC_ANALYSIS, true) { $v{fieldVar} }
+        annotatedClass.addMethod(astNodes[0].members.name.value, Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL, ClassHelper.Long_TYPE, [] as Parameter[], [] as ClassNode[], body)
     }
 }
 
