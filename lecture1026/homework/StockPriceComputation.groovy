@@ -70,19 +70,25 @@ group.with {
     
     //implement the three operators and utility intermediate channels here
     final chicagoEURPrices = new DataflowQueue()
+    final parisNormalEURPrices = new DataflowQueue()
     final avgPricesPass = new DataflowQueue()
 
     def chicagoConverter = operator(inputs: [chicagoUSDPrices, usd2eurRates], outputs: [chicagoEURPrices]) {price, rate ->
         bindOutput (price*rate)
     }
 
-    def avgCalculator = operator(inputs: [parisEURPrices, viennaEURPrices, chicagoEURPrices], outputs: [avgPricesPass, avgPrices]) {a, b, c ->
-        bindAllOutputs ((a + b + c) / 3)
+    def parisNormalizer = operator(inputs: [parisEURPrices], stateObject: [parisPrice: 0], outputs: [parisNormalEURPrices]) {
+        if (it != 0) stateObject.parisPrice = it
+        bindOutput stateObject.parisPrice
     }
 
-    def fiveDayAvgCalculator = operator(inputs: [avgPricesPass], stateObject: [values: [], days: 0], outputs: [fiveDayAverages]) {
-        stateObject.values[stateObject.days++ % 5] = it
-        bindOutput stateObject.values.average()
+    def avgCalculator = operator(inputs: [parisNormalEURPrices, viennaEURPrices, frankfurtEURPrices, chicagoEURPrices], outputs: [avgPricesPass, avgPrices]) {a, b, c, d ->
+        bindAllOutputs ((a + b + c + d) / 4)
+    }
+
+    def fiveDayAvgCalculator = operator(inputs: [avgPricesPass], stateObject: [lastFiveAvgs: [], days: 0], outputs: [fiveDayAverages]) {
+        stateObject.lastFiveAvgs[stateObject.days++ % 5] = it
+        bindOutput stateObject.lastFiveAvgs.average()
     }
 
     //================================= do not modify beyond this point    
