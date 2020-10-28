@@ -62,21 +62,21 @@ group.with {
     //================================= do not modify above this point
     
     //implement the three operators and utility intermediate channels here
+    final chicagoEURPrices = new DataflowQueue()
+    final avgPricesPass = new DataflowQueue()
 
+    def chicagoConverter = operator(inputs: [chicagoUSDPrices, usd2eurRates], outputs: [chicagoEURPrices]) {price, rate ->
+        bindOutput (price*rate)
+    }
 
+    def avgCalculator = operator(inputs: [parisEURPrices, viennaEURPrices, chicagoEURPrices], outputs: [avgPricesPass, avgPrices]) {a, b, c ->
+        bindAllOutputs ((a + b + c) / 3)
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def fiveDayAvgCalculator = operator(inputs: [avgPricesPass], stateObject: [values: [], days: 0], outputs: [fiveDayAverages]) {
+        stateObject.values[stateObject.days++ % 5] = it
+        bindOutput stateObject.values.average()
+    }
 
     //================================= do not modify beyond this point
     
