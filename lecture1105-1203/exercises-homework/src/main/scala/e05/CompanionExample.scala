@@ -28,6 +28,22 @@ class MyList[T] private(private val item: T, private val next: MyList[T]) {
 		
 		result.toString()
 	}
+
+	def apply(id: Int): T = {
+		var list = this
+		var id2 = id
+
+		while (id2 > 0) {
+			list = list.next
+			id2 -= 1
+		}
+
+		if (id2 < 0) {
+			throw new RuntimeException("Negative index: " + id);
+		} else {
+			return list.item
+		}
+	}
 }
 
 object MyList {
@@ -54,6 +70,10 @@ object CompanionExample {
 		 * 
 		 * println(list(0))
 		 */
+
+		println(list(0))
+		println(list(1))
+		println(list(2))
 	}
 	
 }
