@@ -5,6 +5,8 @@
 		}
 	],
 	"settings": {
+		"files.insertFinalNewline": true,
+		"files.trimTrailingWhitespace": true,
 		"files.watcherExclude": {
 			"**/target": true
 		}
