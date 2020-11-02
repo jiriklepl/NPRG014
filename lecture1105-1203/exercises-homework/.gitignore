@@ -1,2 +1,7 @@
 **/target
 .idea
+
+#
+.bloop
+.metals
+**/metals.sbt
