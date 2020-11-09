@@ -4,6 +4,9 @@
 			"path": "."
 		}
 	],
+	"extensions": {
+		"recommendations": ["scalameta.metals"]
+	},
 	"settings": {
 		"files.insertFinalNewline": true,
 		"files.trimTrailingWhitespace": true,
