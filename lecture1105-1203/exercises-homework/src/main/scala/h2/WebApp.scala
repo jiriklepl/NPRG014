@@ -25,7 +25,9 @@ trait IdentityCache {
   def getOrAuthenticate(): IdentityType
 }
 
-trait InMemoryIdentityCache extends IdentityCache with SessionProvider with Authenticator {
+trait InMemoryIdentityCache extends IdentityCache {
+  this: SessionProvider with Authenticator =>
+
   val cache = mutable.Map.empty[Session, IdentityType]
 
   override def getOrAuthenticate(): IdentityType = {
@@ -58,7 +60,9 @@ trait RoleManager {
   def hasRole(role: String): Boolean
 }
 
-trait SAMLRoleManager extends RoleManager with InMemoryIdentityCache with SAMLAuthenticator {
+trait SAMLRoleManager extends RoleManager with UsesSAMLIdentity {
+  this: IdentityCache =>
+
   override def hasRole(role: String) = {
     val identity = getOrAuthenticate()
     identity.saml == "XXX"
@@ -66,7 +70,7 @@ trait SAMLRoleManager extends RoleManager with InMemoryIdentityCache with SAMLAu
 }
 
 
-object WebApp extends SAMLRoleManager with DefaultSessionProvider {
+object WebApp extends SAMLRoleManager with SAMLAuthenticator with DefaultSessionProvider with InMemoryIdentityCache {
   def main(args: Array[String]): Unit = {
     println(hasRole("YYY")) // Prints "true"
   }
