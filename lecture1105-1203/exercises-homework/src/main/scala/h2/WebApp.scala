@@ -1,10 +1,3 @@
-/* Uncomment this to finalize the code
-
-/*
-  Add necessary definitions where indicated to make the statement in the main work as specified there.
-  Do not add any new classes / traits
-*/
-
 package h2
 
 import scala.collection.mutable
@@ -27,32 +20,29 @@ abstract class Identity {
 }
 
 trait IdentityCache {
-  /* ... Add whatever needed, but no definitions of new methods ...*/
+  type IdentityType <: Identity
 
-  def getOrAuthenticate(): /* ... Add type, but no function body ... */
+  def getOrAuthenticate(): IdentityType
 }
 
+trait InMemoryIdentityCache extends IdentityCache with SessionProvider with Authenticator {
+  val cache = mutable.Map.empty[Session, IdentityType]
 
-trait InMemoryIdentityCache extends IdentityCache {
-  /* ... Add whatever needed, but no definitions of methods ...*/
-
-  val cache = mutable.Map.empty[Session, /* ... */]
-
-  override def getOrAuthenticate(): /* ... */ = {
+  override def getOrAuthenticate(): IdentityType = {
     cache.getOrElseUpdate(session, authenticate)
   }
 }
 
 
 trait Authenticator {
-  /* ... Add whatever needed, but no definitions of new methods ...*/
+  type IdentityType <: Identity
 
-  def authenticate(): /* ... Add type, but no function body ... */
+  def authenticate(): IdentityType
 }
 
 
 trait UsesSAMLIdentity {
-  /* ... Add whatever needed, but no definitions of new methods ...*/
+  type IdentityType = SAMLIdentity
 }
 
 class SAMLIdentity(val saml: String) extends Identity
@@ -68,9 +58,7 @@ trait RoleManager {
   def hasRole(role: String): Boolean
 }
 
-trait SAMLRoleManager extends RoleManager with UsesSAMLIdentity {
-  /* ... Add whatever needed, but no definitions of new methods ...*/
-
+trait SAMLRoleManager extends RoleManager with InMemoryIdentityCache with SAMLAuthenticator {
   override def hasRole(role: String) = {
     val identity = getOrAuthenticate()
     identity.saml == "XXX"
@@ -78,10 +66,8 @@ trait SAMLRoleManager extends RoleManager with UsesSAMLIdentity {
 }
 
 
-object WebApp extends /* ... Extend traits as per the cake pattern ... */  {
+object WebApp extends SAMLRoleManager with DefaultSessionProvider {
   def main(args: Array[String]): Unit = {
     println(hasRole("YYY")) // Prints "true"
   }
 }
-
-*/
