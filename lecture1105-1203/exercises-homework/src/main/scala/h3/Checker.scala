@@ -28,17 +28,23 @@ class Monitor[T] {
 	}
 
 	def require(func: PartialFunction[T, Boolean]): Boolean = {
-		eventsToBeProcessed match {
-			case event :: events =>
-				if (func.isDefinedAt(event)) {
-					eventsToBeProcessed = events
-					func(event)
-				} else {
-					true
-				}
-			case Nil =>
-				throw new NoSuchElementException()
+
+		var i = 0
+		var result = false
+
+		for (event <- eventsToBeProcessed) {
+			i = i + 1
+			if (func.isDefinedAt(event)) {
+				val taken = eventsToBeProcessed.take(i)
+				eventsToBeProcessed = eventsToBeProcessed.drop(i)
+				result = func(event)
+				eventsToBeProcessed = taken ::: eventsToBeProcessed
+
+				return result
+			}
 		}
+
+		return result
 	}
 }
 
@@ -77,6 +83,7 @@ class MyMonitor extends Monitor[Event] {
 				require {
 					case Succeed(`c`) => true
 					case Fail(`c`) => false
+					case Command(`c`) => false
 				}
 		}
 	}
