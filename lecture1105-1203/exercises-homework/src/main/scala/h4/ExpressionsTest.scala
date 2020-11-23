@@ -1,5 +1,3 @@
-/* Uncomment this to finalize the code
-
 /*
   Add necessary code to ExpressionImplicits.scala (located under <root>/macros/src/scala/h4)
 */
@@ -20,6 +18,4 @@ object ExpressionsTest {
   }
 
 }
-
-*/
 
